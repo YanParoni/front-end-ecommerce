@@ -6,8 +6,6 @@ import ProductSearch from '../components/ProductSearch'
 import {
   getCategories,
   getCategorie,
-  getProductsFromCategoryAndQuery,
-  getProduct,
 } from '../services/api';
 
 class Home extends Component {
@@ -26,6 +24,7 @@ class Home extends Component {
   componentDidMount() {
     this.fetchCategories();
   }
+
 
   async fetchCategories() {
     const categories = await getCategories();
@@ -79,7 +78,7 @@ const mapDispatchToProps = (dispatch) => ({
   prod: (state) => dispatch(sendProducts(state)),
 });
 const mapStateToProps = (state) => ({
-  produc: state.cart.products
-  
+  produc: state.cart.products,
+  input: state.cart.input
 })
 export default connect(mapStateToProps,mapDispatchToProps)(Home);
