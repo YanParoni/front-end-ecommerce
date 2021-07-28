@@ -7,3 +7,9 @@ export const sendProducts = (state) => ({
   type: PRODUCTS,
   state,
 });
+
+export const searchInput = (state) => ({
+  type: SEARCH_INPUT,
+  state,
+});
+

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { sendProducts } from '../actions';
 import { connect } from 'react-redux';
 import ProductList from '../components/ProductList'
+import ProductSearch from '../components/ProductSearch'
 import {
   getCategories,
   getCategorie,
@@ -36,11 +37,16 @@ class Home extends Component {
     const { prod } = this.props
     const product = 'product';
     const value = 'value';
+    const thumb = 'thumb';
+    const perma = 'perma'
     const cu = await getCategorie(id);
-    const formatData = cu.results.map(({ title, price }) => {
+    console.log(cu)
+    const formatData = cu.results.map(({ title, price,permalink,thumbnail }) => {
       return {
         [product]: title,
         [value]: price,
+        [thumb]: thumbnail,
+        [perma]: permalink
       };
     });
     prod(formatData)
@@ -50,8 +56,8 @@ class Home extends Component {
   render() {
     const { categories } = this.state;
     return (
-      <>
-        <ul>
+      <div className="flex flex-row   ">
+        <ul className='flex flex-col '>
           {categories.map(({ id, name }) => (
             <li key={id}>
               <button type="button" onClick={() => this.fetchCategory(id)}>
@@ -60,8 +66,11 @@ class Home extends Component {
             </li>
           ))}
         </ul>
-        <ProductList/>
-      </>
+
+        <ProductList />
+        <ProductSearch/>
+
+      </div>
     );
   }
 }
@@ -71,5 +80,6 @@ const mapDispatchToProps = (dispatch) => ({
 });
 const mapStateToProps = (state) => ({
   produc: state.cart.products
+  
 })
 export default connect(mapStateToProps,mapDispatchToProps)(Home);
