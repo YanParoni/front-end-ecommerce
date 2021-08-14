@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import { sendProducts } from '../actions';
 import { connect } from 'react-redux';
-import ProductList from '../components/ProductList'
-import ProductSearch from '../components/ProductSearch'
-import {
-  getCategories,
-  getCategorie,
-} from '../services/api';
+import ProductList from '../components/ProductList';
+import Header from '../components/Header';
+import { getCategories, getCategorie } from '../services/api';
+import Footer  from '../components/Footer';
 
 class Home extends Component {
   constructor(props) {
@@ -21,11 +19,12 @@ class Home extends Component {
     this.fetchCategory = this.fetchCategory.bind(this);
     this.fetchCategories = this.fetchCategories.bind(this);
   }
+
   componentDidMount() {
     this.fetchCategories();
   }
 
-
+  
   async fetchCategories() {
     const categories = await getCategories();
     this.setState({ categories });
@@ -33,30 +32,40 @@ class Home extends Component {
 
   async fetchCategory(id) {
     this.setState({ selectedCategory: id });
-    const { prod } = this.props
+    const { prod } = this.props;
     const product = 'product';
     const value = 'value';
     const thumb = 'thumb';
-    const perma = 'perma'
+    const perma = 'perma';
+    const available = 'available';
+    const productId = 'productId';
+    const sellerId = 'sellerId'
     const cu = await getCategorie(id);
     console.log(cu)
-    const formatData = cu.results.map(({ title, price,permalink,thumbnail }) => {
-      return {
-        [product]: title,
-        [value]: price,
-        [thumb]: thumbnail,
-        [perma]: permalink
-      };
-    });
-    prod(formatData)
+
+    const formatData = cu.results.map(
+      ({ title, price, permalink, thumbnail, available_quantity, id,seller,address }) => {
+        return {
+          [product]: title,
+          [value]: price,
+          [thumb]: thumbnail,
+          [perma]: permalink,
+          [available]: available_quantity,
+          [productId]: id,
+          [sellerId]: seller,
+          address,        };
+      }
+    );
+    prod(formatData);
     this.setState({ products: formatData });
   }
-
   render() {
-    const { categories } = this.state;
+    const { categories, cartCount } = this.state;
     return (
-      <div className="flex flex-row   ">
-        <ul className='flex flex-col '>
+      <div className='flex flex-col min-h-screen justify-between'>
+        <Header />
+        <div className='flex flex-row'>
+        <ul className="flex flex-col ">
           {categories.map(({ id, name }) => (
             <li key={id}>
               <button type="button" onClick={() => this.fetchCategory(id)}>
@@ -65,10 +74,11 @@ class Home extends Component {
             </li>
           ))}
         </ul>
-
-        <ProductList />
-        <ProductSearch/>
-
+        <div className="flex flex-col ">
+          <ProductList />
+        </div>
+        </div>
+        <Footer/>
       </div>
     );
   }
@@ -77,8 +87,10 @@ class Home extends Component {
 const mapDispatchToProps = (dispatch) => ({
   prod: (state) => dispatch(sendProducts(state)),
 });
+
 const mapStateToProps = (state) => ({
   produc: state.cart.products,
-  input: state.cart.input
-})
-export default connect(mapStateToProps,mapDispatchToProps)(Home);
+  input: state.cart.input,
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
